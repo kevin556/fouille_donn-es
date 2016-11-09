@@ -1,0 +1,9 @@
+Mongo db installation
+
+brew install mongodb
+
+https://docs.mongodb.com/v3.2/tutorial/install-mongodb-on-os-x/
+
+Mongo db utilisation
+
+https://docs.mongodb.com/v3.2/#getting-started

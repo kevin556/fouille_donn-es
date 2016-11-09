@@ -1,0 +1,50 @@
+Spec du projet 
+
+version 1 : 9 novembre 2016.
+
+
+L'application ou le projet (ceci est à définir) doit être capable de suggérer des films,en fonction des gouts d'un utilisateur à l'aide d'un algorithme d'aide à la décision.
+L'utilisateur doit pouvoir choisir les éléments de comparaison qui lui semble pertinant.(partie à définir).
+
+
+
+Partie technique:
+	-langage java
+	-Base de données noSql ou mysql. 
+
+
+Partie modelisation:
+	-Une table avec les données liés au film.
+	-Une table avec les utilisateurs lies à leur age et a leur ville de naissance,leur sexe,etc.
+
+Partie configuration:
+	-configuration base de données.
+	-configuration outils:
+		-config git.
+		-config eclipse.
+
+Partie réalisation:(deadline)
+	-Intégration des données : début 10 novembre fin : 13 novembre
+		- Modélisation de la base de données:
+			->réflexion : 10 novembre 13h30
+			->discussion : 10 novembre 14h00
+			->adoption : 10 novembre 15h00
+		- Integration des données : 
+			-> choix de la technologie de la base de données (Nosql,Mysql,psql). 11 novembre 10h12
+			-> parse du fichier ou utilisation de l'API IMDB.11 novembre 10h17
+			-> parse du fichier 11 novembre 10h30
+	
+	- Degré de ressemblance:
+			-> choix du ou des caractéres important 11 novembre 11h00
+			-> integration de la formule de ressemblance 11 novembre 12h00
+			-> Premier calcul 11 novembre 14h00
+
+	-Application mobile ? 
+			-> discussion autour de la nécéssité d'en faire une 14 novembre 13h00
+				-> discussion autour du design de l'application 14 novembre 13h14
+				-> choix des fonctionnalités de l'application. 14 novembre 13h48
+				-> répartition des taches : 14 novembre 14h00
+					-> design 
+					-> programmation
+
+D'autres éléments seront rajoutés plus tard.

@@ -1,0 +1,16 @@
+Langagage du projet : java
+langue du projet : anglais.
+
+
+Commentaire:
+	chaque fonction doit être commentées et documentés.
+
+
+Signature des fonctions:
+	-Les fonctions doivent avoir un nom explicite sinon un commentaire ou une documentaiton doivent être présente afin d'expliciter la fonction.
+
+Nom des variables:
+	-Les variables doivent avoir un nom explicite et il est interdit d'avoir dans la même fonction une variable l et une variable i à 	cause de leurs ressemblance.
+	-Les variables sont entiérement en minuscule.
+	-Lorsqu'une variable est en deux mot,un underscore (_) sépare ces deux mots.
+	-
