@@ -9,7 +9,7 @@ L'utilisateur doit pouvoir choisir les éléments de comparaison qui lui semble 
 
 
 Partie technique:
-	-langage java
+	-langage java ou python
 	-Base de données noSql ou mysql. 
 
 
@@ -48,3 +48,9 @@ Partie réalisation:(deadline)
 					-> programmation
 
 D'autres éléments seront rajoutés plus tard.
+
+15 novembre:
+	realisation:
+		Plusieurs mains différents un en python,un en java car on peut multiplier les languages
+		Base de données JSON donc NoSql.
+		
