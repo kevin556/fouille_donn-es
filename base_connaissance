@@ -5,11 +5,22 @@ brew install mongodb
 https://docs.mongodb.com/v3.2/tutorial/install-mongodb-on-os-x/
 
 Mongo db utilisation
-
 https://docs.mongodb.com/v3.2/#getting-started
+
+tutoriel mongodb
+http://api.mongodb.com/python/current/tutorial.html
 
 IMDB en python
 http://imdbpy.sourceforge.net
 
 coder en python pour android.
 https://kivy.org/#home
+
+api imdb
+https://github.com/richardasaurus/imdb-pie
+
+api mongodb
+http://api.mongodb.com/python/2.1/tutorial.html
+
+site pour les requetes
+https://www.omdbapi.com
