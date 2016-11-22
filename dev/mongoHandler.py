@@ -15,7 +15,8 @@ def showMovies():
 # showMovies()
 try:
 	showMovies()
-except Exception:
+except KeyError:
+	print "Le film n'a pas de titre"
 	pass
 
 
