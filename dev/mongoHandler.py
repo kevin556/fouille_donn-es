@@ -5,16 +5,22 @@ import json
 def showMovies():
 	client = MongoClient()
 	db = client.movie_db
+	print db.movie_db.count()
 	cursor = db.movie_db.find()
 	
 	for document in cursor:
 	    print(document['Title'])    
+	    # print document
 
 # showMovies()
+try:
+	showMovies()
+except Exception:
+	pass
 
 
 
-# Retourne un tableau contenant des films
+
 def getFilmsByTitle(name):
 	client = MongoClient()
 	db = client.movie_db
@@ -25,4 +31,44 @@ def getFilmsByTitle(name):
 		print("title =" , document['Title'], "actors = ",document['Actors'])
 	return res
 
-getFilmsByTitle("Eye Contact 31")
+
+def getFilmsByGenre(genre):
+	client = MongoClient()
+	db = client.movie_db
+	cursor = db.movie_db.find({"Genre": genre})
+	res = []
+	for document in cursor:
+		res.append(document)
+		print("title =" , document['Title'], "actors = ",document['Actors'])
+	return res
+
+def getFilmsByYear(year):
+	client = MongoClient()
+	db = client.movie_db
+	cursor = db.movie_db.find({"Year": year})
+	res = []
+	for document in cursor:
+		res.append(document)
+		print("title =" , document['Title'], "actors = ",document['Actors'])
+	return res
+
+def getFilmsByCountry(country):
+	client = MongoClient()
+	db = client.movie_db
+	cursor = db.movie_db.find({"Country": country})
+	res = []
+	for document in cursor:
+		res.append(document)
+		print("title =" , document['Title'], "actors = ",document['Actors'])
+	return res
+
+
+
+# getFilmsByYear("2005")
+# getFilmsByTitle("Eye Contact 31")
+# def getFilmsByActors(actors):
+
+
+
+
+

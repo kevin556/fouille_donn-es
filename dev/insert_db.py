@@ -15,12 +15,28 @@ def insert(data):
 		result = db.movie_db.insert_one(tmp)
 		print(tmp['Title'])
 
-	# print db.movie_db.count(), "movies inserted"
+	print db.movie_db.count(), "movies inserted"
 
+
+def clearDataBase():
+	client = MongoClient()
+	# purge la table movies
+	db = client.movie_db
+	if(db.movie_db.count() > 0):
+		db.movie_db.delete_many({})
+
+
+
+	
 # Hydrate la base de donnees
 # nb : nombre de films qu'on souhaite inserer
 def hydrate_movies(nb):
-	movies = get_data(nb)
-	insert(movies)
+	clearDataBase()
+	try:
+		movies = get_data(nb)
+		insert(movies)
+	except Exception:
+	    pass
+	
 
-hydrate_movies(1)
+hydrate_movies(10)
