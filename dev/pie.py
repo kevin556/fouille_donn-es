@@ -16,4 +16,5 @@ def get_data(number):
 			tmp_film = str(a)
 		tmp_film = "tt"+tmp_film
 		tmp.append(urllib2.urlopen("http://www.omdbapi.com/?i="+tmp_film+"&plot=short&r=json").read())
+		print tmp[i]
 	return tmp
