@@ -1,17 +1,11 @@
-import BaseHTTPServer
-import CGIHTTPServer
-import cgitb; 
+import SimpleHTTPServer
+import SocketServer
 
+PORT = 8000
 
-PORT = 8888
-server_address = ("", PORT)
+Handler = SimpleHTTPServer.SimpleHTTPRequestHandler
 
-server = BaseHTTPServer.HTTPServer
-handler = CGIHTTPServer.CGIHTTPRequestHandler
-handler.cgi_directories = ["/"]
-print "Serveur actif sur le port :", PORT
+httpd = SocketServer.TCPServer(("", PORT), Handler)
 
-cgitb.enable()
-
-httpd = server(server_address, handler)
+print "serving at port", PORT
 httpd.serve_forever()
