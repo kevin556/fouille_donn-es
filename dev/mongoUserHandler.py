@@ -33,12 +33,23 @@ def calculate_percentage_of_criteria(movies, name, param):
 
 # Renvoi la(le ) (type, genre, annees) qui a le plus
 # grand pourcentage d'appartion
-# ex. ["Action": 80, "Comedy": 20], renverra "Action" 80
-def get_major_by_criteria(tab, type, name):
+# ex. ["Action": 80, "Comedy": 20], renverra "Action"
+def get_major_by_criteria(tab, name):
 	m = 0 
 	gen = ""
 	for x in xrange(1,len(tab)):
 		if(m < tab[x][1]):
-			m = tab[x][1]
 			gen = tab[x][0]
-	return gen, m
+	return gen
+
+# Pour chaque parametres correspondant, la fonction renvoi le nom/valeu
+# ex. Type: movies
+def get_major_criterias(user):
+	params_list = ("Genre", "Type", "Year", "Country", "Language")
+	maj_criterias_dict = dict()
+	for param in params_list:
+		maj_criterias_dict[param] = get_major_by_criteria(calculate_percentages_of_criteria(user,param))
+	return maj_criterias_dict
+
+
+
