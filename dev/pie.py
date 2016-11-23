@@ -2,6 +2,8 @@
 from random import * 
 import urllib2
 
+# killall -15 mongod
+
 def get_data(number):
 	tmp=[]
 	max = 1000000
@@ -18,3 +20,5 @@ def get_data(number):
 		tmp.append(urllib2.urlopen("http://www.omdbapi.com/?i="+tmp_film+"&plot=short&r=json").read())
 		print tmp[i]
 	return tmp
+
+get_data(1)

@@ -7,7 +7,7 @@ def showMovies():
 	db = client.movie_db
 	print db.movie_db.count()
 	cursor = db.movie_db.find()
-	
+
 	for document in cursor:
 	    print(document['Title'])    
 	    # print document
@@ -18,8 +18,6 @@ try:
 except KeyError:
 	print "Le film n'a pas de titre"
 	pass
-
-
 
 
 def getFilmsByTitle(name):
@@ -63,6 +61,16 @@ def getFilmsByCountry(country):
 		print("title =" , document['Title'], "actors = ",document['Actors'])
 	return res
 
+# Recuperer uniquement les films (pas les series ...)
+def getFilms():
+	client = MongoClient()
+	db = client.movie_db
+	cursor = db.movie_db.find({"Type": "movie"})
+	res = []
+	for document in cursor:
+		res.append(document)
+		print("title =" , document['Title'], "actors = ",document['Actors'])
+	return res
 
 
 # getFilmsByYear("2005")
