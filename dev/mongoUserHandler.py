@@ -3,14 +3,15 @@ import json
 
 
 
-# Calcule le pourcentage des genre de tout les films
+# Calcule le pourcentage d'appartion des criteres  de tout les films
 # : retourne un dictionnaire ("Genre", %)
-def calculate_percentage_genres(user):
+# param : type de parametre (Genre, Language etc)
+def calculate_percentage_genres(user, param):
 	movies = get_movies(user)
 	perc_dict = DictWIthDefault("empty")
 	for i in range(0,len(movies),1):
-		if(perc_dict[movies[i]["Genre"]] == "empty"):
-			perc_dict[movies[i]["Genre"]] = calculate_percentage_of_criteria(movies,movies[i],"Genre")
+		if(perc_dict[movies[i][param]] == "empty"):
+			perc_dict[movies[i][param]] = calculate_percentage_of_criteria(movies,movies[i],"Genre")
 	return perc_dict
 
 # Calcule le pourcentage d'un parametre precis
