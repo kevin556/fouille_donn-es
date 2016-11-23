@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html >
+  <head>
+    <meta charset="UTF-8">
+    <title>login</title>
+    
+    
+    
+    
+        <link rel="stylesheet" href="css/style.css">
+
+    
+    
+    
+  </head>
+
+  <body>
+
+    <div class="wrapper">
+	<div class="container">
+		<h1>Welcome CCO Member</h1>
+		
+		<form class="form">
+			<input type="text" id="userName" placeholder="Username">
+			<input type="password" id="pass" placeholder="Password">
+			<button type="button" id="login-button">Login</button>
+		</form>
+	</div>
+	
+	<ul class="bg-bubbles">
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+	</ul>
+</div>
+  <script src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+  <script src="js/index.js"></script>
+  <script type="text/javascript">
+  	$( document ).ready(function() {
+	    console.log( "ready!" );
+
+	    var elt_id = document.getElementById("userName");
+	    var password = document.getElementById("pass");
+
+     	var btnLogin = document.getElementById("login-button");
+
+    /*  btnLogin.addEventListener("click", function(){
+        chechFieldCo();
+      });*/
+
+ 	    function postConnexionUser(){
+ 	    	console.log("ici");
+        var User = new Object();
+            User.id = elt_id.value;
+            User.pass = password.value;
+            console.log(elt_id.value);
+        $.ajax({
+            contentType: "application/json",
+            url: "../../ws/cco/user/login?userId="+elt_id.value+"&token="+password.value,
+            data: JSON.stringify(User),
+            type: "POST"
+        }).done(function(returningData) {
+            var arr = Object.keys(returningData).map(function(k) { return returningData[k] });
+            console.log(arr);
+        
+            console.log("info user: " + arr[5]);
+            if(arr[5] == "cco"){
+              window.localStorage.setItem("userToken", "isConnected");
+              window.localStorage.setItem("userType", "cco");
+              window.location.href = "../FlightList/flightList.html";
+            } 
+            console.log(arr);
+            console.log(arr[5]);
+            if(arr[5] == "aircrew"){
+              window.localStorage.setItem("userToken", "isConnected");
+              window.localStorage.setItem("userType", "cco");
+              window.location.href = "../FlightList/flightList.html";
+
+              //  console.log("Echec authentification gvvgv !");
+/*                  alert("Echec Authentification !");
+*                 window.location.reload();*/
+            }
+
+        }).fail(function() {
+        	console.log("Echec authentification !");
+            alert("Echec Authentification !");
+            window.location.reload();
+        });
+          }; 
+
+	    function checkFieldsCo(){
+	    	if(elt_id.value.length == 0 || password.value.length == 0){
+	    		alert("Un des champ n'est corectement rempli.");
+	    	}
+	    	else{
+	    		postConnexionUser();
+	    	}
+	    }  
+
+	    $('#login-button').click(function(){    
+  			checkFieldsCo();  		});
+
+  	});
+  </script>
+ 
+  </body>
+</html>
