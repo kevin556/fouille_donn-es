@@ -53,3 +53,5 @@ def get_major_criterias(user):
 
 
 
+
+
