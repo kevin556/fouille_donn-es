@@ -3,10 +3,10 @@ import json
 
 
 
-# Calcule le pourcentage d'appartion des criteres  de tout les films
+# Calcule le pourcentage d'appartion des criteres de tout les films
 # : retourne un dictionnaire ("Genre", %)
-# param : type de parametre (Genre, Language etc)
-def calculate_percentage_genres(user, param):
+# param : type de parametre (Genre, Language etc) sauf actors
+def calculate_percentages_of_criteria(user, param):
 	movies = get_movies(user)
 	perc_dict = DictWIthDefault("empty")
 	for i in range(0,len(movies),1):
@@ -31,7 +31,14 @@ def calculate_percentage_of_criteria(movies, name, param):
 	else:
 		return res / len(movies) * 100	
 
-
-
-
-		
+# Renvoi la(le ) (type, genre, annees) qui a le plus
+# grand pourcentage d'appartion
+# ex. ["Action": 80, "Comedy": 20], renverra "Action" 80
+def get_major_by_criteria(tab, type, name):
+	m = 0 
+	gen = ""
+	for x in xrange(1,len(tab)):
+		if(m < tab[x][1]):
+			m = tab[x][1]
+			gen = tab[x][0]
+	return gen, m
