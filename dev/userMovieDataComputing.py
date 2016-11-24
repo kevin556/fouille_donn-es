@@ -1,3 +1,5 @@
+#!/usr/bin/python2.7
+
 from pymongo import MongoClient
 import json
 
@@ -5,7 +7,7 @@ import json
 
 # Calcule le pourcentage d'appartion des criteres de tout les films
 # : retourne un dictionnaire ("Genre", %)
-# param : type de parametre (Genre, Language etc) sauf actors
+# param : type de parametre (Genre, Language, Year etc) sauf actors
 def calculate_percentages_of_criteria(user, param):
 	movies = get_movies(user)
 	perc_dict = DictWIthDefault("empty")

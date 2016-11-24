@@ -1,3 +1,5 @@
+#!/usr/bin/python2.7
+
 from pymongo import MongoClient
 from pie import get_data
 import json
