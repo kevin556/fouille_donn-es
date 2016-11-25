@@ -7,11 +7,15 @@ tmp =()
 client = MongoClient()
 
 db= client.movie_db
-if(db.movie_db.count() > 0):
-	db.movie_db.delete_many({})
+#if(db.movie_db.count() > 0):
+#	db.movie_db.delete_many({})
 
-tmp = get_data()
-for i in tmp:
-	db.movie_db.insert(json.loads(i))
+while(True):
+	tmp = get_data(1)
+	for i in tmp:
+		db.movie_db.insert(json.loads(i))
+
 print db.movie_db.count()
+db.close()
+
 	
