@@ -54,3 +54,13 @@ D'autres éléments seront rajoutés plus tard.
 		Plusieurs mains différents un en python,un en java car on peut multiplier les languages
 		Base de données JSON donc NoSql.
 		
+23 novembre 2016
+
+Algoritmes basés sur le contenu:
+	(options): Créer les fonctions qui calculent le TF-IDF pour le champs acteurs
+	Champs important
+	Titre, acteurs, pays, genre, langue, type(movie, serie)
+
+Algorithme basés sur l’utilisateur:
+	Créer la table utilisateur
+	Hydrater la base avec les utilisateurs générés 
