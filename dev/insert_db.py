@@ -15,6 +15,7 @@ def insert(data):
 		result = db.movie_db.insert_one(tmp)
 		print(tmp['Title'])
 
+<<<<<<< HEAD
 	print db.movie_db.count(), "movies inserted"
 
 
@@ -40,3 +41,18 @@ def hydrate_movies(nb):
 	
 
 hydrate_movies(10)
+=======
+db= client.movie_db
+#if(db.movie_db.count() > 0):
+#	db.movie_db.delete_many({})
+
+while(True):
+	tmp = get_data(1)
+	for i in tmp:
+		db.movie_db.insert(json.loads(i))
+
+print db.movie_db.count()
+db.close()
+
+	
+>>>>>>> 9d69b525e7bfdf526c4c18303aa8209dd700e16a
