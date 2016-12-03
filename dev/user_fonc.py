@@ -62,12 +62,34 @@ def erase_users():
 	client = MongoClient()
 	db = client.user_info
 	db.user_info.delete_many({})
+	db_movie = client.movie_db
+	'''
+	db_movie.movie_db.update({
+	  '_id':liste_movie[i]
+	},{
+		'$set': {
+	     'Rating': 'New Array()',
+	     'Looked': 'New Array()'
+		}
+		}, upsert=False
+	)
+	Au pire a faire en manuel via un shell mongodb
+	'''
 	client.close()
 
 #efface un utilisateur grace a son id.
 def erase_user(id_user):
 	client = MongoClient()
 	db = client.user_info
+	db_movie = client.movie_db
+	tmp = client.user_info.find({'id':id_user})['Looked']
+	for i in tmp:
+			db_movie.movie_db.update({
+				{'_id':tmp},
+				{'$pull':id_user},
+				{multi:true}
+				})
+	
 	db.user_info.remove({'id':str(id_user)})
 	client.close()
 
@@ -95,15 +117,14 @@ def get_current_looked_list(id_movie):
 def modifie_base_movie(mode,liste_movie,liste_rating,id_user):
 	client = MongoClient()
 	db = client.movie_db
+	'''
 	data = db.movie_db.find({})
+	'''
 	if(mode == "liked"):
-		for i in range(0,1,1):
-			id_movie = data.__getitem__(liste_movie[i]).get('_id')
-			print id_movie
-			print "film %d note %d \n"%(liste_movie[i],liste_rating[i])
+		for i in range(0,len(liste_movie),1):
 			try:
-				tmp = db.movie_db.update_one({
-					  '_id':id_movie
+				db.movie_db.update_one({
+					  '_id':liste_movie[i]
 				},{
   					'$push': {
 				     'Rating': liste_rating[i]
@@ -118,39 +139,30 @@ def modifie_base_movie(mode,liste_movie,liste_rating,id_user):
 				print "add_to_rating %s"%(Exception)
 	if(mode == "looked"):
 		for i in range(0,1,1):
-			id_movie = data.__getitem__(liste_movie[i]).get('_id')
 			try:
-				get_current_looked_list(id_movie)
-				tmp = db.movie_db.update_one({
-					  '_id':id_movie
+				db.movie_db.update_one({
+					  '_id':liste_movie[i]
 				},{
   					'$addToSet': {
 				     'Looked':id_user
 				  }
 				}, upsert=False)
+				'''
 				print tmp.modified_count
 				print tmp.matched_count
 				print tmp.raw_result
-
+				'''
 			except Exception as ex:
 				template = "An exception of type {0} occured. Arguments:\n{1!r}"
 				message = template.format(type(ex).__name__, ex.args)
 				print message
-
-	get_current_rating(id_movie)
-	get_current_looked_list(id_movie)
+	'''
+	get_current_rating(liste_movie[i])
+	get_current_looked_list(liste_movie[i])
+	'''
 	client.close()
 
-def generate_favorite_genre():
-	random.seed()
-	client = MongoClient()
-	db = client[nom_base_movie]
-	nb_film = db.movie_db.count()
-	src  = db.movie_db.find({})
-	genre = src.__getitem__(random.randrange(nb_film))['Genre']
-	client.close()
-	print "genre %s "%(genre)
-	return genre
+
 
 def generate_liste_movie_liked(movie_nb,id_user,min_like):
 	random.seed()
@@ -159,13 +171,13 @@ def generate_liste_movie_liked(movie_nb,id_user,min_like):
 	liste =[]
 	liste_looked=[]
 	db = client.movie_db
+	tmp = db.movie_db.find({})
 	nb_film = db.movie_db.count()
 	for i in range(0,movie_nb,1):
-		liste.append(random.randrange(0,nb_film,1))
-	
+		liste.append(tmp.__getitem__(random.randrange(0,nb_film,1))["_id"])
 	hasard = (len(liste) - random.randrange(0,len(liste),1))+min_like
 	if hasard > len(liste):
-		hasard = len(liste)
+		hasard = len(liste) - 1
 	for i in range(0,hasard,1):
 		liste_looked.append(liste[i])
 	client.close()
@@ -180,7 +192,12 @@ def generate_rating(taille_liste,note_min,note_max):
 	return liste
 
 #genere les données random pour les utilisateurs 
-def random_data(movie_nb):
+def random_data(movie_nb,min_like):
+	nb_champ_genre = 3
+	nb_champ_country = 2
+	nb_champ_year = 2
+	nb_champ_language = 2
+
 	random.seed()
 	liste_ville= ["paris","lyon","toulouse","marseille","nice","nantes","strasbourg"];
 	liste_sexe=["Homme","Femme"]
@@ -192,49 +209,49 @@ def random_data(movie_nb):
 	result['id']=max_id
 	result['username']="user_"+str(max_id)
 	result['ville']=liste_ville[b]
-	result['genre']=generate_favorite_genre()
 	#sexe -> random sur Homme ou Femme
 	result['sexe']=liste_sexe[c]
 	#age -> random sur un range d'age
 	result['age']=random.randrange(13,120,1)
-	result["liked"], result["looked"] =generate_liste_movie_liked(movie_nb,max_id)
+	result["liked"], result["looked"] =generate_liste_movie_liked(movie_nb,max_id,min_like)
 	result["rating"] = generate_rating(len(result["liked"]),0,10);
+	
+	result['genre']=generate_favorite_(nb_champ_genre,movie_nb,'Genre')
+	result['country']=generate_favorite_(nb_champ_country,movie_nb,'Country')
+	result['year']=generate_favorite_(nb_champ_year,movie_nb,'Year')
+	result['language']=generate_favorite_(nb_champ_language,movie_nb,'Language')
+	
+
 	modifie_base_movie("liked",result["liked"],result["rating"],result["id"])
 	modifie_base_movie("looked",result["liked"],result["rating"],result["id"])
 	return result
 
-def get_max_genre():
+def generate_favorite_(nb_max_champ,nb_film,critere):
+	random.seed()
+	genre =[]
 	client = MongoClient()
-	maximum=0
-	liste_type = []
-	genre =""
-	db = client["movie_db"]
-	src = db.movie_db.find({})
-	tab ={}
-	tmp = ""
-	for j in range(1,1000,1):
-		tmp ="'" + src.__getitem__(j)['Genre'] + "'"
-		if tmp not in tab:
-			tab[tmp]=1
-		else:
-			tab[tmp]+=1
-	for j in tab:
-		print tab[j]
-		maximum = max(int(tab[j]),maximum)
-		if(maximum == int(tab[j])):
-			genre = j
-	for k in tab:
-		liste_type.append(k)
-	print liste_type
+	db = client[nom_base_movie]
+	src  = db.movie_db.find({})
+	i=0
+	while i<nb_max_champ:
+		while True:
+			tmp = str(src.__getitem__(random.randrange(nb_film))[critere])
+			if str(tmp) != 'N/A':
+				break
+		if str(tmp) not in genre :
+			genre.append(str(tmp))
+		i+=1	
+
 	client.close()
-	return tab,genre,liste_type
-	'''return tab,maximum'''
+	print "%s : %s "%(critere,genre)
+	return genre
+
 
 #cree les utilisateurs 
 def create_user(nb_user):
 	client = MongoClient()
 	db=client.user_info
 	for i in range(0,nb_user,1):
-		a = random_data(100)
+		a = random_data(100,20)
 		db.user_info.insert_one(a)
 	client.close()

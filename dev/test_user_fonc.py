@@ -36,4 +36,4 @@ print tab
 print genre
 print liste
 '''
-show_user(21)
+create_user(1)
