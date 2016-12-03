@@ -1,8 +1,6 @@
 #!/usr/bin/python2.7
-
 from pymongo import MongoClient
 import json
-
 
 
 # Calcule le pourcentage d'appartion des criteres de tout les films
@@ -52,8 +50,6 @@ def get_major_criterias(user):
 	for param in params_list:
 		maj_criterias_dict[param] = get_major_by_criteria(calculate_percentages_of_criteria(user,param))
 	return maj_criterias_dict
-
-
 
 
 

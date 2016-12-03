@@ -2,6 +2,7 @@
 # coding: utf8
 
 from pymongo import MongoClient
+import test_db
 import random
 import json
 
@@ -155,7 +156,6 @@ def get_max_genre():
 			genre = j
 	return tab,genre
 	'''return tab,maximum'''
-	
 
 
 #cree les utilisateurs 
@@ -167,9 +167,8 @@ def create_user(nb_user):
 		db.user_info.insert_one(a)
 		print a
 	client.close()
-
-
-generate_favorite_genre()
+create_user(100)
+show_users()
 
 
 

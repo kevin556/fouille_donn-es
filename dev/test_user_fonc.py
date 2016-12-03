@@ -13,19 +13,17 @@ def test():
 def clean_base():
 	client = MongoClient()
 	db = client.movie_db
-	'''tmp = db.movie_db.delete_many({'Response':'False'})
-	print tmp.deleted_count
-	'''
-	tmp = db.movie_db.find({'Response':'False'})
-	for i in tmp:
-		print i
+	tmp = db.movie_db.delete_many({'Response':'False'})
+	tmp = db.movie_db.delete_many({'Genre':'N/A'})
+	tmp = db.movie_db.delete_many({'Country':'N/A'})
+	tmp = db.movie_db.delete_many({'Year':'N/A'})
+	tmp = db.movie_db.delete_many({'Language':'N/A'})
+	print db.movie_db.count()
 	client.close()
-
 
 def test_user():
 	return random_data(1)
 	
-
 def test_validate():
 	client = MongoClient()
 	db = client.movie_db
@@ -40,7 +38,10 @@ for i in range(0,nb_user,1):
 print generate_random_genre()
 
 '''
-tab,genre = get_max_genre()
+# tab,genre = get_max_genre()
 
-print tab
-print genre
+# print tab
+# print genre
+
+clean_base()
+
