@@ -21,6 +21,9 @@ def get_data(number):
 		tmp_film = "tt"+tmp_film
 		try:
 			tmp.append(urllib2.urlopen("http://www.omdbapi.com/?i="+tmp_film+"&plot=short&r=json").read())
+			print tmp
 		except Exception:
 			i=i-1
 	return tmp
+
+
