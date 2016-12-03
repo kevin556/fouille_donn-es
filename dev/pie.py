@@ -2,6 +2,9 @@
 from random import * 
 import urllib2
 
+
+# Recuper les films depuis la base de donnees distantes
+# number : nb de films a recuperer
 def get_data(number):
 	tmp=[]
 	max = 1000000

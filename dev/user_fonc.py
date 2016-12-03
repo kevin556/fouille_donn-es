@@ -1,6 +1,13 @@
 #!/usr/bin/python2.7
 # coding: utf8
 
+
+# Notes: Le fichiers permettant de generer les utilisateurs
+# Genere les films pour chaque utilisateur et associe une note
+# Crée l'utilisateur principal:
+	# Genere les films qu'il a like et noté
+	# Genere l'historique
+	# 
 from pymongo import MongoClient
 import random
 import json
@@ -85,7 +92,6 @@ def generate_liste_movie_liked(movie_nb,mode,id_user):
 				}
 			}
 			,upsert=False)
-
 	return liste
 
 
@@ -120,10 +126,10 @@ def create_user(nb_user):
 	for i in range(0,nb_user,1):
 		a = random_data(100)
 		db.user_info.insert_one(a)
-
+		print a
 	client.close()
 
-create_user(1)
+create_user(2)
 
 '''erase_user(1)'''
 
