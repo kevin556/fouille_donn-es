@@ -3,6 +3,8 @@
 '''a faire dans un shell mongodb avant de lancer les fonctions
 	db.movie_db.find().forEach( function(e){ e.Rating = new Array() ;db.movie_db.save(e); });
 	db.movie_db.find().forEach( function(e){ e.Looked = new Array() ;db.movie_db.save(e); });
+	db.movie_db.find().forEach( function(e){ e. = new Array() ;db.movie_db.save(e); });
+	db.movie_db.find().forEach( function(e){ e.Looked = new Array() ;db.movie_db.save(e); });
 	db.movie_db.find().forEach( function(e){ e.Looked = new Array() ;db.movie_db.save(e); });
 	
 '''
@@ -37,9 +39,28 @@ def get_nb_users():
 def show_users():
 	client = MongoClient()
 	db = client.user_info
-	print db.user_info.find({})
+	print db.user_info.find({}).count()
 	client.close()
+
+def show_users(n):
+	client = MongoClient()
+	db = client.user_info
+	res = db.user_info.find()
+	for x in xrange(1,n):
+		print res[x]['id']
 	
+
+	client.close()
+
+
+	
+# affiche n utilisateurs
+# def show_users_by_nb(n):
+# 	client = MongoClient()
+# 	db = client.user_info
+# 	tmp = db.find({})
+# 	client.close()
+
 #affiche un utilisateur en particulier
 def show_user(id_user):
 	client = MongoClient()
@@ -93,15 +114,16 @@ def erase_user(id_user):
 	client = MongoClient()
 	db = client.user_info
 	db_movie = client.movie_db
-	tmp = client.user_info.find({'id':id_user})['Looked']
-	for i in tmp:
-			db_movie.movie_db.update({
-				{'_id':tmp},
-				{'$pull':id_user},
-				{multi:true}
+	tmp = db.user_info.find_one({'id':id_user})
+	print tmp
+	if(tmp != None):
+		if(len(tmp['looked'])>1):
+			for i in tmp:
+				db_movie.movie_db.update({
+					{},
+					{'$pull':{ 'Looked' :{Looked:id_user}}}
 				})
-	
-	db.user_info.remove({'id':str(id_user)})
+		db.user_info.delete_many({'id':id_user})
 	client.close()
 
 '''
@@ -208,7 +230,7 @@ def generate_favorite_(nb_max_champ,nb_film,critere):
 	i=0
 	while i<nb_max_champ:
 		while True:
-			tmp = str(src.__getitem__(random.randrange(nb_film))[critere])
+			tmp = str((src.__getitem__(random.randrange(nb_film))[critere]).encode('utf-8').strip())
 			if str(tmp) != 'N/A':
 				break
 		if str(tmp) not in genre :
@@ -284,13 +306,27 @@ def random_data(movie_nb,min_like):
 	modifie_base_movie("looked",result["liked"],result["rating"],result["id"])
 	return result
 
+
+
 #cree les utilisateurs 
 def create_user(nb_user):
 	client = MongoClient()
 	db=client.user_info
 	for i in range(0,nb_user,1):
-		a = random_data(100,20)
+		a = random_data(100,50)
 		db.user_info.insert_one(a)
 	client.close()
 
-create_user(10)
+def show_movies():
+	client = MongoClient()
+	db= client.movie_db
+	print db.movie_db.count()
+	client.close()
+
+
+
+
+
+
+
+# create_user(10)

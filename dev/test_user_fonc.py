@@ -15,7 +15,6 @@ def clean_base():
 	db = client.movie_db
 	tmp = db.movie_db.delete_many({'Country':'N/A'})
 	tmp = db.movie_db.delete_many({'Language':'N/A'})
-	tmp = db.movie_db.delete_many({'Genre':'N/A'})
 	tmp = db.movie_db.delete_many({'Year':'N/A'})
 	print tmp.deleted_count
 	client.close()
@@ -37,4 +36,17 @@ print tab
 print genre
 print liste
 '''
-# create_user(1)
+
+def show_movies(nb):
+	client = MongoClient()
+	db = client["movie_db"]
+	print db.movie_db.count()
+	tmp = db.movie_db.find({})
+
+show_users(2)
+
+	
+# create_user(10)
+# erase_users()
+# show_users_by_nb(2)
+# erase_user(1)
