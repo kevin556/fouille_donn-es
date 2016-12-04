@@ -284,8 +284,6 @@ def random_data(movie_nb,min_like):
 	modifie_base_movie("looked",result["liked"],result["rating"],result["id"])
 	return result
 
-
-
 #cree les utilisateurs 
 def create_user(nb_user):
 	client = MongoClient()
@@ -294,3 +292,5 @@ def create_user(nb_user):
 		a = random_data(100,20)
 		db.user_info.insert_one(a)
 	client.close()
+
+create_user(10)
