@@ -13,35 +13,27 @@ def test():
 def clean_base():
 	client = MongoClient()
 	db = client.movie_db
-	tmp = db.movie_db.delete_many({'Response':'False'})
-	tmp = db.movie_db.delete_many({'Genre':'N/A'})
 	tmp = db.movie_db.delete_many({'Country':'N/A'})
-	tmp = db.movie_db.delete_many({'Year':'N/A'})
 	tmp = db.movie_db.delete_many({'Language':'N/A'})
-	print db.movie_db.count()
+	tmp = db.movie_db.delete_many({'Year':'N/A'})
+	print tmp.deleted_count
 	client.close()
+
 
 def test_user():
 	return random_data(1)
 	
+
 def test_validate():
 	client = MongoClient()
 	db = client.movie_db
 	client.close()
-'''
-nb_user = get_nb_users()
-
-erase_user(0)
-for i in range(0,nb_user,1):
-	show_user(i)
-
-print generate_random_genre()
 
 '''
-# tab,genre = get_max_genre()
-
-# print tab
-# print genre
-
+tab,genre,liste = get_max_genre()
 clean_base()
-
+print tab
+print genre
+print liste
+'''
+create_user(1)
