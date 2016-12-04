@@ -3,9 +3,6 @@
 '''a faire dans un shell mongodb avant de lancer les fonctions
 	db.movie_db.find().forEach( function(e){ e.Rating = new Array() ;db.movie_db.save(e); });
 	db.movie_db.find().forEach( function(e){ e.Looked = new Array() ;db.movie_db.save(e); });
-	db.movie_db.find().forEach( function(e){ e. = new Array() ;db.movie_db.save(e); });
-	db.movie_db.find().forEach( function(e){ e.Looked = new Array() ;db.movie_db.save(e); });
-	db.movie_db.find().forEach( function(e){ e.Looked = new Array() ;db.movie_db.save(e); });
 	
 '''
 
@@ -211,7 +208,7 @@ def generate_favorite_(nb_max_champ,nb_film,critere):
 	i=0
 	while i<nb_max_champ:
 		while True:
-			tmp = str(src.__getitem__(random.randrange(nb_film))[critere])
+			tmp = str(src.__getitem__(random.randrange(nb_film))[critere]).encode('utf-8').strip()
 			if str(tmp) != 'N/A':
 				break
 		if str(tmp) not in genre :
