@@ -15,6 +15,7 @@ def clean_base():
 	db = client.movie_db
 	tmp = db.movie_db.delete_many({'Country':'N/A'})
 	tmp = db.movie_db.delete_many({'Language':'N/A'})
+	tmp = db.movie_db.delete_many({'Genre':'N/A'})
 	tmp = db.movie_db.delete_many({'Year':'N/A'})
 	print tmp.deleted_count
 	client.close()
@@ -36,4 +37,4 @@ print tab
 print genre
 print liste
 '''
-create_user(1)
+# create_user(1)
