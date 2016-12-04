@@ -27,7 +27,7 @@ def make_matrice_correlation_by_criteria(criteria):
 		user_to_compare = db_user.user_info.find_one({'id':id_usr})
 		for j in range(i,db_user.user_info.count(),1):
 			user_tmp = db_user.user_info.find_one({'id':src.__getitem__(j)['id']})
-			db_matrice.matrice_correlation_user[i].append(personr(user_to_compare,user_tmp))
+			db_matrice.matrice_correlation_user[i].append(pearsonr(user_to_compare,user_tmp))
 	client.close()
 
 def get_group_of_user(user_to_compare):
