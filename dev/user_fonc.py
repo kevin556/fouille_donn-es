@@ -3,6 +3,8 @@
 '''a faire dans un shell mongodb avant de lancer les fonctions
 	db.movie_db.find().forEach( function(e){ e.Rating = new Array() ;db.movie_db.save(e); });
 	db.movie_db.find().forEach( function(e){ e.Looked = new Array() ;db.movie_db.save(e); });
+	db.movie_db.find().forEach( function(e){ e. = new Array() ;db.movie_db.save(e); });
+	db.movie_db.find().forEach( function(e){ e.Looked = new Array() ;db.movie_db.save(e); });
 	db.movie_db.find().forEach( function(e){ e.Looked = new Array() ;db.movie_db.save(e); });
 	
 '''
@@ -93,15 +95,16 @@ def erase_user(id_user):
 	client = MongoClient()
 	db = client.user_info
 	db_movie = client.movie_db
-	tmp = client.user_info.find({'id':id_user})['Looked']
-	for i in tmp:
-			db_movie.movie_db.update({
-				{'_id':tmp},
-				{'$pull':id_user},
-				{multi:true}
+	tmp = db.user_info.find_one({'id':id_user})
+	print tmp
+	if(tmp != None):
+		if(len(tmp['looked'])>1):
+			for i in tmp:
+				db_movie.movie_db.update({
+					{},
+					{'$pull':{ 'Looked' :{Looked:id_user}}}
 				})
-	
-	db.user_info.remove({'id':str(id_user)})
+		db.user_info.delete_many({'id':id_user})
 	client.close()
 
 '''
@@ -294,3 +297,6 @@ def create_user(nb_user):
 		a = random_data(100,20)
 		db.user_info.insert_one(a)
 	client.close()
+
+
+'''create_user(10)'''
