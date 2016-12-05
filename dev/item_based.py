@@ -185,18 +185,18 @@ def get_note_given_by_user(id_user, id_movie):
 
 # renvoi true si l'element est dans l'array
 def is_in_array(array,element):
-	for x in array:
-		if(x == element):
-			return true
-	return false
+	for x in xrange(0,len(array)):
+		if(array[x] == element):
+			return True
+	return False
 
 # Retourne les elements communs aux deux tableaux
 def get_same_element(array1, array2):
 	res = []
-	for x in array1:
-		for y in array2:
+	for x in xrange(0,len(array1)):
+		for y in xrange(1,len(array2)):
 			if(array1[x] == array2[y]):
-				if(isInArray() != true):
+				if(is_in_array(res,array1[x]) != True):
 					res.append(array1[x])
 	return res
 
@@ -208,44 +208,126 @@ def get_same_element(array1, array2):
 # et ainsi de suite jusqu'a ce qu'il n'y ait plus d'utilisateurs qui ont des films en commun avec same_movies
 
 
+def add_foreach(array1, array2):
+	for x in xrange(1,len(array2)):
+		array1.append(array2[x])
+	return array1
+
+# renvoi la note du film donnee par l'utilisateur
+def get_note_to_film_by_user_id(id_film,id_user):
+	client = MongoClient()
+	db = client.user_info
+	tmp = db.user_info.find_one({'id':id_user})
+	#print tmp
+	compteur = 0
+	for i in tmp['liked']:
+		#print "yo %s "%(i)
+		if str(i) == str(id_film):
+			print i
+			print compteur
+			client.close()
+			print tmp['rating'][compteur]
+			return tmp['rating'][compteur]
+		compteur +=1
+	# print "erreur le film n'est pas present"
+	client.close()
+
+
+def test_get_note_to_film_by_user_id(id_user):
+	client = MongoClient()
+	db = client.user_info
+	data = db.user_info.find_one({'id':id_user})
+	for i in xrange(0,len(data['looked'])):
+		get_note_to_film_by_user_id(data['looked'][i],id_user)
+	client.close()
 
 
 
+#get_note_to_film_by_user_id("ObjetctId('58371135256a1a046d47fb80')",22)
+
+
+# get_note_to_film_by_user_id('58371092256a1a046d47f9d5',22)
+# get_note_to_film_by_user_id('58371180256a1a046d47fc4c',22)
+# test_dessus(55)
 # definir une fonction qui compare deux tableaux et non pas des sets
+# stocke les utilisateurs qui ont les films en commun afin de ne pas tous les reparcouri
 def get_movie_and_note_by_user(id_user):
 	client = MongoClient()
 	db = client.user_info
 	db_movies = client.movie_db
 
-	movies = db.user_info.find_one({'id':id_user})['liked']
-	mov_rating = db.user_info.find_one({'id':id_user})['rating']
-	# for x in xrange(1,len(movies)):
-	# 	print db_movies.movie_db.find_one({"_id": movies[x]})['_id']
-	# 	print mov_rating[x]
-	# cherche les films commun pour un certain nombre d'utilisateurs
-	movies_big = []
-	movies_rate_big = []
-
+	movies_user_p = db.user_info.find_one({'id':id_user})['liked']
+	mov_rating_user_p = db.user_info.find_one({'id':id_user})['rating']
 
 	same_movies = []
-	for j in xrange(1,1000):
-		movies1 = db.user_info.find_one({'id':j})['liked']
-		mov_rating1 = db.user_info.find_one({'id':j})['rating']
-		
-		if(len(same_movies) == 0):
-			if(len(set(movies) & set(movies1)) > 4):
-				same_movies.append(set(movies) & set(movies1))
-				print "debut"
-		else:
-			if(len(set(same_movies) & set(movies1)) > 3):
-				same_movies.append(set(movies) & set(movies1))
-				print "ici"
+	users_used = []
+	max_nb = 0
+	max_user_id = -1
+	data = db.user_info.find({})
+
+	# recupere l'utilisateur qui a le maximum de film en commun
+	# ces films la sont mis dans
+	tmp = []
+
+	for j in xrange(0,1500):
+		if(j != id_user):
+			movies_u = data.__getitem__(j)['liked']
+			mov_rating_u = data.__getitem__(j)['rating']
+
+			if len(set(movies_u) & set(movies_user_p)) > 0 and j not in tmp:
+				tmp.append(j)
+			if(len(set(movies_u) & set(movies_user_p)) > max_nb):
+				users_used = []
+				same_movies = []
+				max_nb = len(set(movies_u) & set(movies_user_p))
+				users_used.append(j)
+				same_movies = add_foreach(same_movies,get_same_element(movies_u,movies_user_p))
+	'''
+	print tmp
+	# print users_used
+	print max_nb
 	print same_movies
+	'''
+	founded = True
+	while(founded):
+		max_nb = 0
+		founded = False
+		for j in tmp:
+			if(j != id_user and j not in users_used):
+				movies_u = data.__getitem__(j)['liked']
+				mov_rating_u = data.__getitem__(j)['rating']
+				if((len(set(same_movies) & set(movies_u)) > max_nb)):
+					founded = True
+					max_nb = len(set(same_movies) & set(movies_u))
+					users_used.append(j)
+					same_movies = add_foreach(same_movies,get_same_element(same_movies,movies_u))
+				# if(len(set(same_movies) & set(movies_user_p)) == 0):
+	print "nombre de films ", len(same_movies)
+	print "nombre d'utilisateurs " , users_used
+	print "film communs trouves ", max_nb
 
+
+
+
+	# print same_movies
+	# print db.user_info.find_one({'id':j})
 	client.close()
-	return movies
+	return same_movies
+
+# user p a l'id 10
+
+# x = [9,10,18,2]
+# y = [9,10,18,1]
+
+# x1 = [209,210,211,212]
+# y1 = [209,210,211,211]
 
 
+# print pearsonr(x,y)
+# print pearsonr(x1,y1)
+
+
+# get_movie_and_note_by_user(10)
 # get_movie_and_note_by_user(9)
 
 
