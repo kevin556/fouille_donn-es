@@ -87,7 +87,18 @@ def get_random_movie():
 		# for doc in res:
 		# 	print(doc)
 
-		
+def get_
+
+
+
+
+
+
+
+
+
+
+
 
 
  

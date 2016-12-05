@@ -127,7 +127,6 @@ def get_correlation_movies(movies, movie):
 	# affiche le deg de correlation
 	print max(cor_list)
 	print cor_list
-	[i for i,x in enumerate(testlist) if x == 1
 	# affiche le film
 	# print cor_list.index[max(cor_list)]
 
@@ -165,19 +164,54 @@ def get_movies_to_possible_correlation_by_nb(nb,user_id):
 		
 
 
-get_movies_to_possible_correlation_by_nb(10,9)
+# get_movies_to_possible_correlation_by_nb(10,9)
 
-# get_movie_and_note_by_user(9)
-# get_movies_to_possible_correlation_by_nb()
+def get_note_given_by_user(id_user, id_movie):
+	client = MongoClient()
+	db = client.user_info
+	db_movies = client.movie_db
 
-# get_random_movies(3)
-# create_user(2000)
-# show_users(10)
-# getUserLookedFilms(9)
-# getFilmByObjectId()
+	movies = db.user_info.find_one({'id':id_user})['liked']
+	mov_rating = db.user_info.find_one({'id':id_user})['rating']
+
+	x = movies.index(id_movie)
+	# print id_movie
+	print "la note donne est " , mov_rating[x]
+	# print mov_rating
+	return mov_rating[x]
+	client.close()
+
+# get_note_given_by_user(9)
+
+# renvoi true si l'element est dans l'array
+def is_in_array(array,element):
+	for x in array:
+		if(x == element):
+			return true
+	return false
+
+# Retourne les elements communs aux deux tableaux
+def get_same_element(array1, array2):
+	res = []
+	for x in array1:
+		for y in array2:
+			if(array1[x] == array2[y]):
+				if(isInArray() != true):
+					res.append(array1[x])
+	return res
+
+# recuperer les films de l'user1
+# pour tous les autres utilisateurs, recuperer celui qui a le plus de films en commun
+# ajouter ces films dans same_movies
+# ensuite, reparcourir le tableau et trouver le second utilisateur qui a le 
+# plus de films en commun avec same_movies
+# et ainsi de suite jusqu'a ce qu'il n'y ait plus d'utilisateurs qui ont des films en commun avec same_movies
 
 
 
+
+
+# definir une fonction qui compare deux tableaux et non pas des sets
 def get_movie_and_note_by_user(id_user):
 	client = MongoClient()
 	db = client.user_info
@@ -189,16 +223,46 @@ def get_movie_and_note_by_user(id_user):
 	# 	print db_movies.movie_db.find_one({"_id": movies[x]})['_id']
 	# 	print mov_rating[x]
 	# cherche les films commun pour un certain nombre d'utilisateurs
-	for x in xrange(1,100):
-		movies = db.user_info.find_one({'id':x})['liked']
-		mov_rating = db.user_info.find_one({'id':x})['rating']
+	movies_big = []
+	movies_rate_big = []
 
-		movies1 = db.user_info.find_one({'id':x+1})['liked']
-		mov_rating1 = db.user_info.find_one({'id':x+1})['rating']
 
-		print len(set(movies1) & set(movies))
+	same_movies = []
+	for j in xrange(1,1000):
+		movies1 = db.user_info.find_one({'id':j})['liked']
+		mov_rating1 = db.user_info.find_one({'id':j})['rating']
+		
+		if(len(same_movies) == 0):
+			if(len(set(movies) & set(movies1)) > 4):
+				same_movies.append(set(movies) & set(movies1))
+				print "debut"
+		else:
+			if(len(set(same_movies) & set(movies1)) > 3):
+				same_movies.append(set(movies) & set(movies1))
+				print "ici"
+	print same_movies
 
+	client.close()
 	return movies
+
+
+# get_movie_and_note_by_user(9)
+
+
+
+
+
+
+# get_movies_to_possible_correlation_by_nb()
+
+# get_random_movies(3)
+# create_user(2000)
+# show_users(10)
+# getUserLookedFilms(9)
+# getFilmByObjectId()
+
+
+
 # fonction qui recuper un nombre n de films en base
 
 
