@@ -74,7 +74,6 @@ def getFilms():
 		print("title =" , document['Title'], "actors = ",document['Actors'])
 	return res
 
-
 # getFilmsByYear("2005")
 # getFilmsByTitle("Eye Contact 31")
 # def getFilmsByActors(actors):
