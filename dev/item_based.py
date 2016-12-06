@@ -276,12 +276,73 @@ def get_movie_and_note_by_user(id_user):
 # user p a l'id 10
 
 
-print pearsonr(x,y)
-print pearsonr(x1,y1)
+# print pearsonr(x,y)
+# print pearsonr(x1,y1)
 
 
 # get_movie_and_note_by_user(10)
 # get_movie_and_note_by_user(9)
+
+
+def search_hystory(id_user):
+	client = MongoClient()
+	db = client.user_info
+	db_movies = client.movie_db
+	search_year = db.user_info.find_one({'id':id_user})['search_year']
+	search_genre = db.user_info.find_one({'id':id_user})['search_genre']
+	search_actor = db.user_info.find_one({'id':id_user})['search_actor']
+	search_country = db.user_info.find_one({'id':id_user})['search_country']
+	search_language = db.user_info.find_one({'id':id_user})['search_language']
+	# print search_year
+	# print search_genre
+	# print search_country
+	# print search_actor
+	# print search_language
+	# print search_country[0]
+	newlist = []
+	for i in range(0,len(search_language)):
+		for j in range(0,len(search_genre)):
+			for k in range(0,len(search_year)):
+				for m in range(0,len(search_country)):
+					listMovie = db_movies.movie_db.find({"Genre" : search_genre[j] , "Year" : search_year[k], "Language" : search_language[i] , "Country" : search_country[m]})
+					for n in listMovie:
+						if n['_id'] not in newlist:
+							newlist.append(n['_id'])
+	# for doc in newlist:
+	# 	print doc
+	# RECUPE HISTORY PREF AND BEST
+	client.close()
+	return newlist
+
+def search_history(id_user):
+	client = MongoClient()
+	db = client.user_info
+	db_movies = client.movie_db
+	search_year = db.user_info.find_one({'id':id_user})['search_year']
+	search_genre = db.user_info.find_one({'id':id_user})['search_genre']
+	search_actor = db.user_info.find_one({'id':id_user})['search_actor']
+	search_country = db.user_info.find_one({'id':id_user})['search_country']
+	search_language = db.user_info.find_one({'id':id_user})['search_language']
+	# print search_year
+	# print search_genre
+	# print search_country
+	# print search_actor
+	# print search_language
+	# print search_country[0]
+	newlist = []
+	for i in range(0,len(search_language)):
+		for j in range(0,len(search_genre)):
+			for k in range(0,len(search_year)):
+				for m in range(0,len(search_country)):
+					listMovie = db_movies.movie_db.find({"Genre" : search_genre[j] , "Year" : search_year[k], "Language" : search_language[i] , "Country" : search_country[m]})
+					for n in listMovie:
+						if n['_id'] not in newlist:
+							newlist.append(n['_id'])
+	# for doc in newlist:
+	# 	print doc
+	# RECUPE HISTORY PREF AND BEST
+	client.close()
+	return newlist
 
 
 
@@ -292,9 +353,12 @@ print pearsonr(x1,y1)
 
 # get_random_movies(3)
 # create_user(2000)
-# show_users(10)
+# show_users(1)
+search_history(1)
 # getUserLookedFilms(9)
 # getFilmByObjectId()
+
+
 
 
 

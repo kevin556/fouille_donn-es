@@ -46,8 +46,8 @@ def show_users(n):
 	client = MongoClient()
 	db = client.user_info
 	res = db.user_info.find()
-	for x in xrange(1,n):
-		print res[x]['id']
+	for x in xrange(0,n):
+		print res[x]
 	
 
 	client.close()
