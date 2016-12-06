@@ -338,15 +338,55 @@ def search_history(id_user):
 					for n in listMovie:
 						if n['_id'] not in newlist:
 							newlist.append(n['_id'])
-	# for doc in newlist:
-	# 	print doc
+	for doc in newlist:
+		print doc
 	# RECUPE HISTORY PREF AND BEST
 	client.close()
 	return newlist
 
+def search_pref(id_user):
+	client = MongoClient()
+	db = client.user_info
+	db_movies = client.movie_db
+	year = db.user_info.find_one({'id':id_user})['year']
+	genre = db.user_info.find_one({'id':id_user})['genre']
+	country = db.user_info.find_one({'id':id_user})['country']
+	language = db.user_info.find_one({'id':id_user})['language']
+	newlist = []
+	for i in range(0,len(language)):
+		for j in range(0,len(genre)):
+			for k in range(0,len(year)):
+				for m in range(0,len(country)):
+					listMovie = db_movies.movie_db.find({"Genre" : genre[j] , "Year" : year[k], "Language" : language[i] , "Country" : country[m]})
+					for n in listMovie:
+						if n['_id'] not in newlist:
+							newlist.append(n['_id'])
+	for doc in newlist:
+		print doc
+	# RECUPE HISTORY PREF AND BEST
+	client.close()
+	return newlist
 
-
-
+def search_best(id_user):
+	client = MongoClient()
+	db = client.user_info
+	db_movies = client.movie_db
+	best_year = db.user_info.find_one({'id':id_user})['best_year']
+	best_genre = db.user_info.find_one({'id':id_user})['best_genre']
+	best_language = db.user_info.find_one({'id':id_user})['best_language']
+	newlist = []
+	for i in range(0,len(best_language)):
+		for j in range(0,len(best_genre)):
+			for k in range(0,len(best_year)):
+				listMovie = db_movies.movie_db.find({"Genre" : best_genre[j] , "Year" : best_year[k], "Language" : best_language[i] })
+				for n in listMovie:
+					if n['_id'] not in newlist:
+						newlist.append(n['_id'])
+	for doc in newlist:
+		print doc
+	# RECUPE HISTORY PREF AND BEST
+	client.close()
+	return newlist
 
 
 # get_movies_to_possible_correlation_by_nb()
@@ -355,6 +395,12 @@ def search_history(id_user):
 # create_user(2000)
 # show_users(1)
 search_history(1)
+print "-----"
+search_pref(1)
+print "-----"
+# for i in range(0,100):
+# 	search_best(i)
+search_best(1)
 # getUserLookedFilms(9)
 # getFilmByObjectId()
 
