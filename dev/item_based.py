@@ -164,24 +164,6 @@ def get_movies_to_possible_correlation_by_nb(nb,user_id):
 		
 
 
-# get_movies_to_possible_correlation_by_nb(10,9)
-
-def get_note_given_by_user(id_user, id_movie):
-	client = MongoClient()
-	db = client.user_info
-	db_movies = client.movie_db
-
-	movies = db.user_info.find_one({'id':id_user})['liked']
-	mov_rating = db.user_info.find_one({'id':id_user})['rating']
-
-	x = movies.index(id_movie)
-	# print id_movie
-	print "la note donne est " , mov_rating[x]
-	# print mov_rating
-	return mov_rating[x]
-	client.close()
-
-# get_note_given_by_user(9)
 
 # renvoi true si l'element est dans l'array
 def is_in_array(array,element):
@@ -196,7 +178,8 @@ def get_same_element(array1, array2):
 	for x in xrange(0,len(array1)):
 		for y in xrange(1,len(array2)):
 			if(array1[x] == array2[y]):
-				if(is_in_array(res,array1[x]) != True):
+				if(array1[x] not in res):
+				# if(is_in_array(res,array1[x]) != True):
 					res.append(array1[x])
 	return res
 
@@ -209,30 +192,17 @@ def get_same_element(array1, array2):
 
 
 def add_foreach(array1, array2):
-	for x in xrange(1,len(array2)):
-		array1.append(array2[x])
+	for x in xrange(0,len(array2)):
+		if array2[x] not in array1:
+			array1.append(array2[x])
+			# print "pas dedans"
+		# else:
+			# print "dedans"
 	return array1
 
-# renvoi la note du film donnee par l'utilisateur
-def get_note_to_film_by_user_id(id_film,id_user):
-	client = MongoClient()
-	db = client.user_info
-	tmp = db.user_info.find_one({'id':id_user})
-	#print tmp
-	compteur = 0
-	for i in tmp['liked']:
-		#print "yo %s "%(i)
-		if str(i) == str(id_film):
-			print i
-			print compteur
-			client.close()
-			print tmp['rating'][compteur]
-			return tmp['rating'][compteur]
-		compteur +=1
-	# print "erreur le film n'est pas present"
-	client.close()
 
 
+# testons la fonction au dessus
 def test_get_note_to_film_by_user_id(id_user):
 	client = MongoClient()
 	db = client.user_info
@@ -243,7 +213,6 @@ def test_get_note_to_film_by_user_id(id_user):
 
 
 
-#get_note_to_film_by_user_id("ObjetctId('58371135256a1a046d47fb80')",22)
 
 
 # get_note_to_film_by_user_id('58371092256a1a046d47f9d5',22)
@@ -251,6 +220,7 @@ def test_get_note_to_film_by_user_id(id_user):
 # test_dessus(55)
 # definir une fonction qui compare deux tableaux et non pas des sets
 # stocke les utilisateurs qui ont les films en commun afin de ne pas tous les reparcouri
+# phase 1
 def get_movie_and_note_by_user(id_user):
 	client = MongoClient()
 	db = client.user_info
@@ -273,7 +243,6 @@ def get_movie_and_note_by_user(id_user):
 		if(j != id_user):
 			movies_u = data.__getitem__(j)['liked']
 			mov_rating_u = data.__getitem__(j)['rating']
-
 			if len(set(movies_u) & set(movies_user_p)) > 0 and j not in tmp:
 				tmp.append(j)
 			if(len(set(movies_u) & set(movies_user_p)) > max_nb):
@@ -299,23 +268,157 @@ def get_movie_and_note_by_user(id_user):
 				if((len(set(same_movies) & set(movies_u)) > max_nb)):
 					founded = True
 					max_nb = len(set(same_movies) & set(movies_u))
+					print max_nb
 					users_used.append(j)
 					same_movies = add_foreach(same_movies,get_same_element(same_movies,movies_u))
 				# if(len(set(same_movies) & set(movies_user_p)) == 0):
 	print "nombre de films ", len(same_movies)
-	print "nombre d'utilisateurs " , users_used
-	print "film communs trouves ", max_nb
-
-
-
-
+	print "utilisateurs " , users_used
 	# print same_movies
 	# print db.user_info.find_one({'id':j})
 	client.close()
-	return same_movies
+	return same_movies, users_used
+
+
+
+
+
+
+# cree la matrice pour chaque film:
+# [id_film, note][j]
+# id_user_ref: user de references
+def make_matrix(user_id_ref, movies, users):
+	client = MongoClient()
+	db = client.matrix_info
+	db.matrix_info.delete_many({})
+	print len(movies)
+	res = []
+	for x in movies:
+		for j in users:
+			note = get_note_to_film_by_user_id(x,j)
+			if(note != None):
+				print j , x , note
+				tmp = {'user_id_ref' : str(user_id_ref), 'user_id' : str(j), 'movie' : str(x), 'note' : str(note)}
+				db.matrix_info.insert_one(tmp)
+			else:
+				"l'user n'a pas donne la note"	
+	print "inserted ", db.matrix_info.count()
+	client.close()
+	return res	
+
+def save_matrix_in_base(matrix, id_user):
+	client = MongoClient()
+	db = client.matrix_info
+	for x in xrange(0,len(matrix)):
+		tmp = str(matrix[x])
+		# db.matrix_info.insert_one(x)
+	client.close()
+
+# recupere la matrice existante depuis la base
+def get_matrix_from_base():
+	client = MongoClient()
+	db = client.matrix_info
+	cur = db.matrix_info.find({})
+	res = []
+	for doc in cur:
+		# print doc
+		res.append(doc)
+	# print res
+	client.close()
+	return res
+
+
+
+# renvoi la note du film donnee par l'utilisateur
+def get_note_to_film_by_user_id(id_film,id_user):
+	client = MongoClient()
+	db = client.user_info
+	# print "id du film ", id_film
+	# print "id de l'user ", id_user
+	tmp = db.user_info.find_one({'id':id_user})
+	#print tmp
+	compteur = 0
+	for i in tmp['liked']:
+		#print "yo %s "%(i)
+		if str(i) == str(id_film):
+			# print i
+			# print compteur
+			client.close()
+			# print tmp['rating'][compteur]
+			return tmp['rating'][compteur]
+		# else:
+			# print "le film:",str(i), " n'as pas ete note"  	
+		compteur +=1	
+	# print "erreur le film n'est pas present"
+	client.close()
+
+
+def get_rates_for_all_movies(matrix):
+	ratings = []
+	used_movies = []
+	for x in matrix:
+		if(x['movie'] not in used_movies):
+			used_movies.append(x['movie'])
+			ratings.append((x['movie'],get_all_rates_for_movie(x['movie'],matrix)))
+
+
+	for x in ratings:
+		print len(x[1])
+	return ratings	
+
+
+def get_all_rates_for_movie(id_movie, matrix):
+	rating = []
+	compteur = 0
+	for x in matrix:
+		if id_movie == x['movie']:
+			rating.append(x['note'])
+			compteur = compteur +1
+	return rating
+		
+def has_noted(user_id,movie_id):
+	client = MongoClient()
+	db = client.user_info
+	user = db.user_info.find_one({'id': user_id})
+	liked = []
+	for x in user['liked']:
+		liked.append(str(x))
+	if(movie_id in liked):
+		return True
+	else:
+		return False	
+	client.close()	
+
+def get_noted_from_mat(user_id,matrix):
+	for x in matrix:
+		if x['user_id'] == user_id:
+			print x['movie']
+
+
+# renvoi l'user qui a le plus de film en commun
+def get_user_max_common_film(matrix):
+	client = MongoClient()
+	db = client.user_info
+	users = db.user_info.find({})
+	users_ids = []
+
+	client.close()
+
+# gerenation de la matrice pour l'user dont l'id est egal a 10
+# movies_users = get_movie_and_note_by_user(10)
+# print (movies_users[0])
+# print (movies_users[1])
+# print len(movies_users[0])
+# matrix = make_matrix(10,movies_users[0],movies_users[1])
+# save_matrix_in_base(matrix,10)
+
+# matrix = get_matrix_from_base()
+# get_common_movies(matrix)
+
+
+
 
 # user p a l'id 10
-
 # x = [9,10,18,2]
 # y = [9,10,18,1]
 
@@ -338,7 +441,7 @@ def get_movie_and_note_by_user(id_user):
 # get_movies_to_possible_correlation_by_nb()
 
 # get_random_movies(3)
-# create_user(2000)
+create_user(2000)
 # show_users(10)
 # getUserLookedFilms(9)
 # getFilmByObjectId()
