@@ -312,8 +312,9 @@ def random_data(movie_nb,min_like):
 def create_user(nb_user):
 	client = MongoClient()
 	db=client.user_info
+	db.user_info.delete_many({})
 	for i in range(0,nb_user,1):
-		a = random_data(100,50)
+		a = random_data(1000,950)
 		db.user_info.insert_one(a)
 	client.close()
 

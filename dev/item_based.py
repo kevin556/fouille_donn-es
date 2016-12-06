@@ -388,19 +388,43 @@ def search_best(id_user):
 	client.close()
 	return newlist
 
+def search_high_rating(listMovie,nb_max_movie):
+	client = MongoClient()
+	db = client.user_info
+	db_movies = client.movie_db
+	rating_movie = []
+	for i in range(0,len(listMovie)):
+		note = 0
+		list_rating = getRatingsOfMovieById(listMovie[i])
+		for j in range(0,len(list_rating)):
+			note = note + list_rating[j]
+		note = note / float(len(list_rating))
+		if len(rating_movie) < nb_max_movie:
+			rating_movie.append([ note ,listMovie[j]])
+			rating_movie.sort()
+		elif rating_movie[0][0] < note:
+			del rating_movie[0]
+			rating_movie.append([note , listMovie[j]])
+			rating_movie.sort()
+	client.close()
+	return rating_movie
+
+
+
 
 # get_movies_to_possible_correlation_by_nb()
-
+# show_movies(1)
+search_high_rating(search_best(1),10)
 # get_random_movies(3)
 # create_user(2000)
 # show_users(1)
-search_history(1)
-print "-----"
-search_pref(1)
-print "-----"
-# for i in range(0,100):
-# 	search_best(i)
-search_best(1)
+# search_history(1)
+# print "-----"
+# search_pref(1)
+# print "-----"
+# # for i in range(0,100):
+# # 	search_best(i)
+# search_best(1)
 # getUserLookedFilms(9)
 # getFilmByObjectId()
 
