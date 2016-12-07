@@ -5,6 +5,7 @@ from pymongo import MongoClient
 import random
 import json
 import operator
+from bson import ObjectId
 from scipy.stats.stats import pearsonr
 from user_fonc import *
 
@@ -258,17 +259,20 @@ def get_movie_and_note_by_user(id_user):
 	print same_movies
 	'''
 	founded = True
-	while(founded):
+	max_users = 200
+	while(founded and max_users > 0):
 		max_nb = 0
 		founded = False
 		for j in tmp:
-			if(j != id_user and j not in users_used):
+			if(j != id_user and j not in users_used  and max_users > 0):
 				movies_u = data.__getitem__(j)['liked']
 				mov_rating_u = data.__getitem__(j)['rating']
-				if((len(set(same_movies) & set(movies_u)) > max_nb)):
+				if((len(set(same_movies) & set(movies_u)) > 6)):
 					founded = True
+					max_users = max_users - 1
 					max_nb = len(set(same_movies) & set(movies_u))
-					print max_nb
+					# print max_users
+					# print max_nb
 					users_used.append(j)
 					same_movies = add_foreach(same_movies,get_same_element(same_movies,movies_u))
 				# if(len(set(same_movies) & set(movies_user_p)) == 0):
@@ -297,22 +301,23 @@ def make_matrix(user_id_ref, movies, users):
 		for j in users:
 			note = get_note_to_film_by_user_id(x,j)
 			if(note != None):
-				print j , x , note
+				# print j , x , note
 				tmp = {'user_id_ref' : str(user_id_ref), 'user_id' : str(j), 'movie' : str(x), 'note' : str(note)}
 				db.matrix_info.insert_one(tmp)
 			else:
 				"l'user n'a pas donne la note"	
 	print "inserted ", db.matrix_info.count()
 	client.close()
-	return res	
+	return res
 
-def save_matrix_in_base(matrix, id_user):
-	client = MongoClient()
-	db = client.matrix_info
-	for x in xrange(0,len(matrix)):
-		tmp = str(matrix[x])
-		# db.matrix_info.insert_one(x)
-	client.close()
+# def save_matrix_in_base(matrix, id_user):
+# 	client = MongoClient()
+# 	db = client.matrix_info
+# 	db.matrix_info.delete_many({})
+# 	for x in xrange(0,len(matrix)):
+# 		tmp = str(matrix[x])
+# 		db.matrix_info.insert_one(x)
+# 	client.close()
 
 # recupere la matrice existante depuis la base
 def get_matrix_from_base():
@@ -321,7 +326,7 @@ def get_matrix_from_base():
 	cur = db.matrix_info.find({})
 	res = []
 	for doc in cur:
-		# print doc
+		print doc
 		res.append(doc)
 	# print res
 	client.close()
@@ -376,18 +381,7 @@ def get_all_rates_for_movie(id_movie, matrix):
 			compteur = compteur +1
 	return rating
 		
-def has_noted(user_id,movie_id):
-	client = MongoClient()
-	db = client.user_info
-	user = db.user_info.find_one({'id': user_id})
-	liked = []
-	for x in user['liked']:
-		liked.append(str(x))
-	if(movie_id in liked):
-		return True
-	else:
-		return False	
-	client.close()	
+
 
 def get_noted_from_mat(user_id,matrix):
 	for x in matrix:
@@ -399,10 +393,185 @@ def get_noted_from_mat(user_id,matrix):
 def get_user_max_common_film(matrix):
 	client = MongoClient()
 	db = client.user_info
-	users = db.user_info.find({})
-	users_ids = []
+	user_ids = []
+	for x in matrix:
+		user_ids.appen(x['user_id'])
 
+	showed = []
+	for x in user_ids:
+		if x not in showed:
+			print x , " apparait " , user_ids.count(x), " fois"
 	client.close()
+
+def has_rated_movie(id_user, id_movie):
+	client = MongoClient()
+	db = client.user_info
+	user = db.user_info.find_one({'id': id_user})
+	movies = user['liked']
+	print movies
+	client.close()
+
+def seen(id_user,movie,matrix):
+	res = False
+	for x in matrix:
+		if(x['user_id'] == id_user):
+			if(movie == x['movie']):
+				res = True
+				break
+	return res			
+
+def get_note(id_user,movie,matrix):
+	for x in matrix:
+		if(x['user_id'] == id_user):
+			if(movie == x['movie']):
+				return x['note']
+
+
+
+# garde que les film regardes par tout le monde
+def filter_matrix(matrix):
+	movies = []
+	users = []
+	notes = []
+	for x in matrix:
+		movies.append(x['movie'])
+		users.append(x['user_id'])
+		notes.append(x['note'])
+	print users
+
+	mat_filtered = []
+	tmp_u = []
+	for u in users:
+		tmp = []
+		if u not in tmp_u:
+			tmp_u.append(u)
+			for m in movies:
+				if(seen(u,m,matrix)) == True:
+					if m not in tmp:
+						tmp.append(m)
+						mat_filtered.append((u,m,get_note(u,m,matrix)))
+						# print "seen" , u , " ", m
+				else:
+					if m not in tmp:
+						tmp.append(m)
+						mat_filtered.append((u,m,random.randrange(1,10)))
+	print mat_filtered					
+	return mat_filtered
+
+# retourne les rating du film a partir de la matric
+def get_ratings_from_matrix(id_movie, matrix):
+	rates = []
+	for x in matrix:
+		if id_movie == x[1]:
+			rates.append(x[2])
+	# print rates		
+	return rates		
+
+def aux_fun(tab):
+	res = []
+	for x in tab:
+		res.append(int(x))
+	return res	
+
+
+def save_correlation_information(movie_corr):
+	client = MongoClient()
+	db = client.matrix_correlation
+	db.matrix_correlation.delete_many({})
+
+	for x in movie_corr:		
+		tmp = {'id_user' : x[0],'id_movie': x[1], 'corr': x[2], "id_ref_movie" : x[3]}
+		db.matrix_correlation.insert_one(tmp)
+	client.close()	
+
+# retourne le film qui a la meilleure correlation
+# avec le film passe en parametre
+def calculate_corelations_between_movies(matrix):
+	print "calcule de degre de correlation"
+	tmp = []
+	for x in matrix:
+		if x[1] not in tmp:
+			tmp.append(x[1])
+
+
+	id_movie = tmp[random.randrange(0,len(tmp))]
+	print "choosen movie" , id_movie
+	print id_movie
+	movie_ref_ratings = []
+	movies = []
+	movie_corr = []
+	for x in matrix:
+		if(x[1] == id_movie):
+			movie_ref_ratings = get_ratings_from_matrix(id_movie,matrix)
+			movie_ref_ratings = aux_fun(movie_ref_ratings)
+			break
+
+	used_movies = []
+	for x in matrix:
+		if(x not in used_movies):
+			used_movies.append(x)
+			if x != id_movie:
+				one = get_ratings_from_matrix(x[1],matrix)
+				one = aux_fun(one)
+				# print len(one) , " " , len(movie_ref_ratings)
+				movie_corr.append((x[0],x[1],pearsonr(one,movie_ref_ratings),id_movie))
+
+	print movie_corr
+	save_correlation_information(movie_corr)
+
+
+def get_best_movie_by_corelation():
+	client = MongoClient()
+	db = client.matrix_correlation
+	res = db.matrix_correlation.find({})
+	print "film de reference: " , res[0]['id_ref_movie']
+	print "recherche du film qui possede la meilleure correlation..."
+
+	max_cor = 0
+	movie_id = 0
+	for x in res:
+		if x['corr'][0] > max_cor:
+			if x['id_movie'] != x['id_ref_movie']:
+				max_cor = x['corr'][0]
+				movie_id = x['id_movie']
+	print "film possedant la meuilleure correlation = " , movie_id , " qui est de " , max_cor
+	
+
+	db = client.movie_db
+	oid_str = movie_id
+	oid2 = ObjectId(oid_str)
+	result = db.movie_db.find_one({"_id": oid2})
+
+
+	print result
+	client.close()	
+
+
+	#  recherche des films en commun
+	# min 5 films vu au moins par 10 utilisateur
+
+
+	# tmp_m = []
+	# compt_users = 3
+	# compt_movies = 2
+	# movies_used = []
+	# for m in movies:
+	# 	if(m not in tmp_m):
+	# 		tmp_u = []
+	# 		for u in users:
+	# 			if(u not in users):
+	# 				tmp_u.append(u)
+	# 				if(seen(u,m,matrix)) == True:
+	# 					compt_users = compt_users - 1
+	# 					print "test " , compt_users
+	# 		if compt_users == 0:
+	# 			compt_users = 3
+	# 			movies_used.append(m)
+
+	# print movies_used
+
+
+
 
 # gerenation de la matrice pour l'user dont l'id est egal a 10
 # movies_users = get_movie_and_note_by_user(10)
@@ -410,12 +579,13 @@ def get_user_max_common_film(matrix):
 # print (movies_users[1])
 # print len(movies_users[0])
 # matrix = make_matrix(10,movies_users[0],movies_users[1])
-# save_matrix_in_base(matrix,10)
 
 # matrix = get_matrix_from_base()
-# get_common_movies(matrix)
+# # garde que les film regardes par tout le mondematrix_from_base()
+# matrix = filter_matrix(matrix)
 
-
+# calculate_corelations_between_movies(matrix)
+get_best_movie_by_corelation()
 
 
 # user p a l'id 10
@@ -441,7 +611,7 @@ def get_user_max_common_film(matrix):
 # get_movies_to_possible_correlation_by_nb()
 
 # get_random_movies(3)
-create_user(2000)
+# create_user(2000)
 # show_users(10)
 # getUserLookedFilms(9)
 # getFilmByObjectId()
