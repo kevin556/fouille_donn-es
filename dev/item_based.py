@@ -411,6 +411,134 @@ def has_rated_movie(id_user, id_movie):
 	print movies
 	client.close()
 
+def search_hystory(id_user):
+	client = MongoClient()
+	db = client.user_info
+	db_movies = client.movie_db
+	search_year = db.user_info.find_one({'id':id_user})['search_year']
+	search_genre = db.user_info.find_one({'id':id_user})['search_genre']
+	search_actor = db.user_info.find_one({'id':id_user})['search_actor']
+	search_country = db.user_info.find_one({'id':id_user})['search_country']
+	search_language = db.user_info.find_one({'id':id_user})['search_language']
+	# print search_year
+	# print search_genre
+	# print search_country
+	# print search_actor
+	# print search_language
+	# print search_country[0]
+	newlist = []
+	for i in range(0,len(search_language)):
+		for j in range(0,len(search_genre)):
+			for k in range(0,len(search_year)):
+				for m in range(0,len(search_country)):
+					listMovie = db_movies.movie_db.find({"Genre" : search_genre[j] , "Year" : search_year[k], "Language" : search_language[i] , "Country" : search_country[m]})
+					for n in listMovie:
+						if n['_id'] not in newlist:
+							newlist.append(n['_id'])
+	# for doc in newlist:
+	# 	print doc
+	# RECUPE HISTORY PREF AND BEST
+	client.close()
+	return newlist
+
+def search_history(id_user):
+	client = MongoClient()
+	db = client.user_info
+	db_movies = client.movie_db
+	search_year = db.user_info.find_one({'id':id_user})['search_year']
+	search_genre = db.user_info.find_one({'id':id_user})['search_genre']
+	search_actor = db.user_info.find_one({'id':id_user})['search_actor']
+	search_country = db.user_info.find_one({'id':id_user})['search_country']
+	search_language = db.user_info.find_one({'id':id_user})['search_language']
+	# print search_year
+	# print search_genre
+	# print search_country
+	# print search_actor
+	# print search_language
+	# print search_country[0]
+	newlist = []
+	for i in range(0,len(search_language)):
+		for j in range(0,len(search_genre)):
+			for k in range(0,len(search_year)):
+				for m in range(0,len(search_country)):
+					listMovie = db_movies.movie_db.find({"Genre" : search_genre[j] , "Year" : search_year[k], "Language" : search_language[i] , "Country" : search_country[m]})
+					for n in listMovie:
+						if n['_id'] not in newlist:
+							newlist.append(n['_id'])
+	for doc in newlist:
+		print doc
+	# RECUPE HISTORY PREF AND BEST
+	client.close()
+	return newlist
+
+def search_pref(id_user):
+	client = MongoClient()
+	db = client.user_info
+	db_movies = client.movie_db
+	year = db.user_info.find_one({'id':id_user})['year']
+	genre = db.user_info.find_one({'id':id_user})['genre']
+	country = db.user_info.find_one({'id':id_user})['country']
+	language = db.user_info.find_one({'id':id_user})['language']
+	newlist = []
+	for i in range(0,len(language)):
+		for j in range(0,len(genre)):
+			for k in range(0,len(year)):
+				for m in range(0,len(country)):
+					listMovie = db_movies.movie_db.find({"Genre" : genre[j] , "Year" : year[k], "Language" : language[i] , "Country" : country[m]})
+					for n in listMovie:
+						if n['_id'] not in newlist:
+							newlist.append(n['_id'])
+	for doc in newlist:
+		print doc
+	# RECUPE HISTORY PREF AND BEST
+	client.close()
+	return newlist
+
+def search_best(id_user):
+	client = MongoClient()
+	db = client.user_info
+	db_movies = client.movie_db
+	best_year = db.user_info.find_one({'id':id_user})['best_year']
+	best_genre = db.user_info.find_one({'id':id_user})['best_genre']
+	best_language = db.user_info.find_one({'id':id_user})['best_language']
+	newlist = []
+	for i in range(0,len(best_language)):
+		for j in range(0,len(best_genre)):
+			for k in range(0,len(best_year)):
+				listMovie = db_movies.movie_db.find({"Genre" : best_genre[j] , "Year" : best_year[k], "Language" : best_language[i] })
+				for n in listMovie:
+					if n['_id'] not in newlist:
+						newlist.append(n['_id'])
+	for doc in newlist:
+		print doc
+	# RECUPE HISTORY PREF AND BEST
+	client.close()
+	return newlist
+
+def search_high_rating(listMovie,nb_max_movie):
+	client = MongoClient()
+	db = client.user_info
+	db_movies = client.movie_db
+	rating_movie = []
+	for i in range(0,len(listMovie)):
+		note = 0
+		list_rating = getRatingsOfMovieById(listMovie[i])
+		for j in range(0,len(list_rating)):
+			note = note + list_rating[j]
+		note = note / float(len(list_rating))
+		if len(rating_movie) < nb_max_movie:
+			rating_movie.append([ note ,listMovie[j]])
+			rating_movie.sort()
+		elif rating_movie[0][0] < note:
+			del rating_movie[0]
+			rating_movie.append([note , listMovie[j]])
+			rating_movie.sort()
+	client.close()
+	return rating_movie
+
+
+
+
 def seen(id_user,movie,matrix):
 	res = False
 	for x in matrix:
@@ -519,7 +647,7 @@ def calculate_corelations_between_movies(matrix):
 	print movie_corr
 	save_correlation_information(movie_corr)
 
-
+# item-base model
 def get_best_movie_by_corelation():
 	client = MongoClient()
 	db = client.matrix_correlation
@@ -546,31 +674,62 @@ def get_best_movie_by_corelation():
 	print result
 	client.close()	
 
-
-	#  recherche des films en commun
-	# min 5 films vu au moins par 10 utilisateur
-
-
-	# tmp_m = []
-	# compt_users = 3
-	# compt_movies = 2
-	# movies_used = []
-	# for m in movies:
-	# 	if(m not in tmp_m):
-	# 		tmp_u = []
-	# 		for u in users:
-	# 			if(u not in users):
-	# 				tmp_u.append(u)
-	# 				if(seen(u,m,matrix)) == True:
-	# 					compt_users = compt_users - 1
-	# 					print "test " , compt_users
-	# 		if compt_users == 0:
-	# 			compt_users = 3
-	# 			movies_used.append(m)
-
-	# print movies_used
+def get_random_movie_from_user(id_user):
+	client = MongoClient()
+	db = client.user_info
+	res = db.user_info.find_one({'id': id_user})
+	x = random.randrange(0,len(res['liked']))
+	movie = res['liked'][x]
+	client.close()
+	return movie
 
 
+
+# user-based
+def get_notes_given_by_main_user():
+	matrix = get_matrix_from_base()
+	movies_used = []
+	corr = []
+	notes = []
+	users_used = []
+
+	user_main_notes = []
+	for x in matrix:
+		if x['movie'] not in movies_used:
+			movies_used.append(x['movie'])
+			user_main_notes.append(get_note_to_film_by_user_id(x['movie'],10))
+	print user_main_notes			
+
+	tmp = []
+	for u in matrix:
+		tmp = []
+		if(u['user_id'] not in users_used):
+			movies_used = []
+			for x in matrix:
+				if x['movie'] not in movies_used:
+					movies_used.append(x['movie'])
+					# print x['movie'], " " , u['user_id']
+					if get_note(x['movie'],u['user_id'],matrix) == None:
+						tmp.append(random.randrange(0,10))
+						# print tmp
+			# print len(user_main_notes) , " " , len(tmp)
+			# print pearsonr(user_main_notes,tmp)
+			corr.append((u['user_id'],pearsonr(user_main_notes,tmp)[0]))
+	print corr
+
+	max_corr = 0
+	user_max_cor = -1
+	for x in corr:
+		if x[1] > max_corr:
+			max_corr = x[1]
+			user_max_cor = x[0]
+	print max_corr	," user max = " , user_max_cor
+
+	client = MongoClient()
+	db = client.movie_db
+	oid2 = ObjectId(get_random_movie_from_user(int(user_max_cor)))
+	result = db.movie_db.find_one({"_id": oid2})
+	print "le film propose est ", result
 
 
 # gerenation de la matrice pour l'user dont l'id est egal a 10
@@ -585,7 +744,10 @@ def get_best_movie_by_corelation():
 # matrix = filter_matrix(matrix)
 
 # calculate_corelations_between_movies(matrix)
-get_best_movie_by_corelation()
+# item-based model
+# get_best_movie_by_corelation()
+# user-based model
+get_notes_given_by_main_user()
 
 
 # user p a l'id 10
