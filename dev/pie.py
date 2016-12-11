@@ -2,6 +2,10 @@
 from random import * 
 import urllib2
 
+
+# Telecharge "number" films depuis omdb
+# puis renvoi la liste telechages
+
 def get_data(number):
 	tmp=[]
 	max = 1000000
