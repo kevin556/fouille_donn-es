@@ -112,7 +112,6 @@ def get_movies_to_possible_correlation(movies, movie):
 # Renvoi (nb) films qui ont la meuilleures correlation
 # movies: liste de films
 # movie: film de reference
-# 
 def get_correlation_movies(movies, movie):
 	cor_list = []
 	movies_list = []
@@ -192,7 +191,7 @@ def get_same_element(array1, array2):
 # plus de films en commun avec same_movies
 # et ainsi de suite jusqu'a ce qu'il n'y ait plus d'utilisateurs qui ont des films en commun avec same_movies
 
-
+# ajoute les films de array2 qui ne sont pas encore dans array1
 def add_foreach(array1, array2):
 	for x in xrange(0,len(array2)):
 		if array2[x] not in array1:
@@ -352,6 +351,7 @@ def get_note_to_film_by_user_id(id_film,id_user):
 		compteur +=1	
 	# print "erreur le film n'est pas present"
 	client.close()
+
 
 
 def get_rates_for_all_movies(matrix):

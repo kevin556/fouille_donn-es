@@ -5,7 +5,10 @@ from pymongo import MongoClient
 import random
 import json
 import operator
+<<<<<<< HEAD
 from bson import ObjectId
+=======
+>>>>>>> origin/dev_alex
 from scipy.stats.stats import pearsonr
 from user_fonc import *
 
@@ -165,6 +168,27 @@ def get_movies_to_possible_correlation_by_nb(nb,user_id):
 		
 
 
+<<<<<<< HEAD
+=======
+# get_movies_to_possible_correlation_by_nb(10,9)
+
+def get_note_given_by_user(id_user, id_movie):
+	client = MongoClient()
+	db = client.user_info
+	db_movies = client.movie_db
+
+	movies = db.user_info.find_one({'id':id_user})['liked']
+	mov_rating = db.user_info.find_one({'id':id_user})['rating']
+
+	x = movies.index(id_movie)
+	# print id_movie
+	print "la note donne est " , mov_rating[x]
+	# print mov_rating
+	return mov_rating[x]
+	client.close()
+
+# get_note_given_by_user(9)
+>>>>>>> origin/dev_alex
 
 # renvoi true si l'element est dans l'array
 def is_in_array(array,element):
@@ -179,8 +203,12 @@ def get_same_element(array1, array2):
 	for x in xrange(0,len(array1)):
 		for y in xrange(1,len(array2)):
 			if(array1[x] == array2[y]):
+<<<<<<< HEAD
 				if(array1[x] not in res):
 				# if(is_in_array(res,array1[x]) != True):
+=======
+				if(is_in_array(res,array1[x]) != True):
+>>>>>>> origin/dev_alex
 					res.append(array1[x])
 	return res
 
@@ -193,6 +221,7 @@ def get_same_element(array1, array2):
 
 
 def add_foreach(array1, array2):
+<<<<<<< HEAD
 	for x in xrange(0,len(array2)):
 		if array2[x] not in array1:
 			array1.append(array2[x])
@@ -222,6 +251,13 @@ def test_get_note_to_film_by_user_id(id_user):
 # definir une fonction qui compare deux tableaux et non pas des sets
 # stocke les utilisateurs qui ont les films en commun afin de ne pas tous les reparcouri
 # phase 1
+=======
+	for x in xrange(1,len(array2)):
+		array1.append(array2[x])
+	return array1
+
+# definir une fonction qui compare deux tableaux et non pas des sets
+>>>>>>> origin/dev_alex
 def get_movie_and_note_by_user(id_user):
 	client = MongoClient()
 	db = client.user_info
@@ -234,6 +270,7 @@ def get_movie_and_note_by_user(id_user):
 	users_used = []
 	max_nb = 0
 	max_user_id = -1
+<<<<<<< HEAD
 	data = db.user_info.find({})
 
 	# recupere l'utilisateur qui a le maximum de film en commun
@@ -246,12 +283,23 @@ def get_movie_and_note_by_user(id_user):
 			mov_rating_u = data.__getitem__(j)['rating']
 			if len(set(movies_u) & set(movies_user_p)) > 0 and j not in tmp:
 				tmp.append(j)
+=======
+
+
+	# recupere l'utilisateur qui a le maximum de film en commun
+	# ces films la sont mis dans
+	for j in xrange(0,1500):
+		if(j != id_user):
+			movies_u = db.user_info.find_one({'id':j})['liked']
+			mov_rating_u = db.user_info.find_one({'id':j})['rating']
+>>>>>>> origin/dev_alex
 			if(len(set(movies_u) & set(movies_user_p)) > max_nb):
 				users_used = []
 				same_movies = []
 				max_nb = len(set(movies_u) & set(movies_user_p))
 				users_used.append(j)
 				same_movies = add_foreach(same_movies,get_same_element(movies_u,movies_user_p))
+<<<<<<< HEAD
 	'''
 	print tmp
 	# print users_used
@@ -410,6 +458,51 @@ def has_rated_movie(id_user, id_movie):
 	movies = user['liked']
 	print movies
 	client.close()
+=======
+	# print users_used
+	print max_nb
+	print same_movies
+	
+
+	founded = True
+	while(founded):
+		max_nb = 0
+		founded = False
+		for j in xrange(0,1500):
+			if(j != id_user):
+				movies_u = db.user_info.find_one({'id':j})['liked']
+				mov_rating_u = db.user_info.find_one({'id':j})['rating']
+				if((len(set(same_movies) & set(movies_u)) > max_nb) and (is_in_array(users_used,j)) != True):
+					founded = True
+					max_nb = len(set(same_movies) & set(movies_u))
+					users_used.append(j)
+					same_movies = add_foreach(same_movies,get_same_element(same_movies,movies_u))
+				# if(len(set(same_movies) & set(movies_user_p)) == 0):
+		print "nombre de films ", len(same_movies)
+		print "nombre d'utilisateurs " , users_used
+		print "film communs trouves ", max_nb
+
+
+
+
+
+
+	# print same_movies
+	# print db.user_info.find_one({'id':j})
+	client.close()
+	return same_movies
+
+# user p a l'id 10
+
+
+# print pearsonr(x,y)
+# print pearsonr(x1,y1)
+
+
+# get_movie_and_note_by_user(10)
+# get_movie_and_note_by_user(9)
+
+>>>>>>> origin/dev_alex
 
 def search_hystory(id_user):
 	client = MongoClient()
@@ -539,6 +632,7 @@ def search_high_rating(listMovie,nb_max_movie):
 
 
 
+<<<<<<< HEAD
 def seen(id_user,movie,matrix):
 	res = False
 	for x in matrix:
@@ -775,11 +869,31 @@ get_notes_given_by_main_user()
 # get_random_movies(3)
 # create_user(2000)
 # show_users(10)
+=======
+# get_movies_to_possible_correlation_by_nb()
+# show_movies(1)
+search_high_rating(search_best(1),10)
+# get_random_movies(3)
+# create_user(2000)
+# show_users(1)
+# search_history(1)
+# print "-----"
+# search_pref(1)
+# print "-----"
+# # for i in range(0,100):
+# # 	search_best(i)
+# search_best(1)
+>>>>>>> origin/dev_alex
 # getUserLookedFilms(9)
 # getFilmByObjectId()
 
 
 
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> origin/dev_alex
 # fonction qui recuper un nombre n de films en base
 
 

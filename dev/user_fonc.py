@@ -1,5 +1,15 @@
 #!/usr/bin/python2.7
 # coding: utf8
+
+''' 
+	Genere les utilisateurs:
+		- Genere les preferences de l'utilisateur
+		- Genere la liste films qui ont ete regardes par l'utilisateur
+		- Genere les films qui ont ete notes par l'utilisateur
+		- Met a jour les notes pour chaque film en base
+'''
+
+
 '''a faire dans un shell mongodb avant de lancer les fonctions
 	db.movie_db.find().forEach( function(e){ e.Rating = new Array() ;db.movie_db.save(e); });
 	db.movie_db.find().forEach( function(e){ e.Looked = new Array() ;db.movie_db.save(e); });
@@ -42,6 +52,7 @@ def show_users():
 	print db.user_info.find({}).count()
 	client.close()
 
+# affiche les n premiers utilisateurs
 def show_users(n):
 	client = MongoClient()
 	db = client.user_info
@@ -86,7 +97,7 @@ def get_max_id():
 	n'a pas encore été testée.
 	
 '''
-
+# supprime tous les utilisateurs
 def erase_users():
 	client = MongoClient()
 	db = client.user_info
@@ -110,6 +121,7 @@ def erase_users():
 	Efface un utilisateur grace a son id,ainsi que sa présence dans la liste looked de chaque films
 	
 '''
+# supprime l'utilisateur dont l'id est id_user
 def erase_user(id_user):
 	client = MongoClient()
 	db = client.user_info
@@ -129,7 +141,7 @@ def erase_user(id_user):
 '''
 	renvoie la liste des notes du film avec l'id id_movie
 '''
-
+# recupere les notes du films
 def get_current_rating(id_movie):
 	client = MongoClient()
 	db = client.movie_db
@@ -141,6 +153,7 @@ def get_current_rating(id_movie):
 '''
 	renvoie la liste des utilisateurs qui ont regardé le film id_movie
 '''
+
 
 def get_current_looked_list(id_movie):
 	client = MongoClient()
